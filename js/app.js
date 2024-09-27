@@ -1,9 +1,11 @@
 let employees;
+let filteredEmployees = []; // Global variable for filtered employees
 const urlAPI = `https://randomuser.me/api/?results=12&nat=US&inc=picture,name,email,location,phone,dob`;
 
 const displayEmployees = (data) => {
     const employeeSection = document.querySelector('.grid-area');
-    employeeSection.innerHTML = ''; 
+    employeeSection.innerHTML = '';
+
     const contentHolder = document.createDocumentFragment();
 
     data.forEach((currEmp, i) => {
@@ -25,7 +27,7 @@ const displayEmployees = (data) => {
     });
 
     employeeSection.appendChild(contentHolder);
-}
+};
 
 const getEmployeeData = async (url) => {
     try {
@@ -35,12 +37,13 @@ const getEmployeeData = async (url) => {
     } catch (error) {
         console.log('The API has a problem:', error);
     }
-}
+};
 
 const startApp = async () => {
     employees = await getEmployeeData(urlAPI);
-    displayEmployees(employees); 
-}
+    filteredEmployees = employees;
+    displayEmployees(employees);
+};
 
 const toggleModal = () => {
     document.querySelector('.modal').classList.toggle('hidden');
@@ -50,7 +53,7 @@ const createCloseButton = () => {
     const closeButton = document.createElement('span');
     closeButton.className = 'close';
     closeButton.innerHTML = '&times;';
-    closeButton.onclick = toggleModal; // Use arrow function for brevity
+    closeButton.onclick = toggleModal;
 
     return closeButton;
 };
@@ -60,8 +63,8 @@ const setModalData = (data, index) => {
         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 
         'FL', 'GA', 'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME',
         'MH', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
-        'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW',
-        'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
+        'NM', 'NY', 'NC', 'ND', 'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI',
+        'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
     ];
 
     const modalCardContainer = document.querySelector('.modal .card-container .card');
@@ -111,29 +114,33 @@ const createNavigationButtons = () => {
 const changeEmployee = (direction) => {
     const currentIndex = +document.querySelector('.modal .card-container .card').dataset.index;
 
-    const activeCards = [...document.querySelectorAll('.grid-area .card')].map(card => +card.dataset.index);
+    const activeCards = filteredEmployees.map((_, i) => i);
 
     const newIndex = direction === 'prev' 
         ? (currentIndex === activeCards[0] ? activeCards[activeCards.length - 1] : activeCards[activeCards.indexOf(currentIndex) - 1])
         : (currentIndex === activeCards[activeCards.length - 1] ? activeCards[0] : activeCards[activeCards.indexOf(currentIndex) + 1]);
 
-    if (newIndex >= 0 && newIndex < employees.length) {
-        setModalData(employees[newIndex], newIndex);
+    if (newIndex >= 0 && newIndex < filteredEmployees.length) {
+        setModalData(filteredEmployees[newIndex], newIndex);
     }
 };
 
 const showModal = (e) => {
     if (e.target.closest('.card')) {
         const index = e.target.closest('.card').dataset.index;
-        setModalData(employees[index], index);
+        setModalData(filteredEmployees[index], index);
         toggleModal();
     }
 };
 
 const filterCards = ({ target: { value } }) => {
-    const filteredEmployees = employees.filter(emp => 
-        `${emp.name.first} ${emp.name.last}`.toLowerCase().includes(value.toLowerCase())
-    );
+    if (value.trim() === '') {
+        filteredEmployees = employees;
+    } else {
+        filteredEmployees = employees.filter(emp => 
+            `${emp.name.first} ${emp.name.last}`.toLowerCase().includes(value.toLowerCase())
+        );
+    }
     displayEmployees(filteredEmployees);
 };
 
