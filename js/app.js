@@ -1,9 +1,10 @@
 let employees;
 const urlAPI = `https://randomuser.me/api/?results=12&nat=US&inc=picture,name,email,location,phone,dob`;
 
-
 const displayEmployees = (data) => {
     const employeeSection = document.querySelector('.grid-area');
+    employeeSection.innerHTML = ''; // Resetăm conținutul pentru a adăuga doar cardurile filtrate
+
     const contentHolder = document.createDocumentFragment();
 
     data.forEach((currEmp, i) => {
@@ -39,7 +40,7 @@ const getEmployeeData = async (url) => {
 
 const startApp = async () => {
     employees = await getEmployeeData(urlAPI);
-    displayEmployees(employees);
+    displayEmployees(employees); // Afișăm toți angajații inițial
 }
 
 const toggleModal = () => {
@@ -86,6 +87,7 @@ const setModalData = (data, index) => {
     }
     createNavigationButtons();
 };
+
 const createNavigationButtons = () => {
     const modalContainer = document.querySelector('.modal .card-container');
     const existingNav = modalContainer.querySelector('.navigation');
@@ -109,9 +111,9 @@ const createNavigationButtons = () => {
 
 const changeEmployee = (direction) => {
     const currentIndex = +document.querySelector('.modal .card-container .card').dataset.index;
-    const activeCards = [...document.querySelectorAll('.grid-area .card')].filter(card => 
-        window.getComputedStyle(card).display !== 'none'
-    ).map(card => +card.dataset.index);
+
+    // Obținem cardurile din DOM după filtrare
+    const activeCards = [...document.querySelectorAll('.grid-area .card')].map(card => +card.dataset.index);
 
     const newIndex = direction === 'prev' 
         ? (currentIndex === activeCards[0] ? activeCards[activeCards.length - 1] : activeCards[activeCards.indexOf(currentIndex) - 1])
@@ -130,10 +132,12 @@ const showModal = (e) => {
     }
 };
 
+// Filtrăm datele și afișăm doar cardurile care corespund căutării
 const filterCards = ({ target: { value } }) => {
-    document.querySelectorAll('.grid-area .card').forEach(card => {
-        card.style.display = card.querySelector('h2').textContent.toLowerCase().includes(value.toLowerCase()) ? 'flex' : 'none';
-    });
+    const filteredEmployees = employees.filter(emp => 
+        `${emp.name.first} ${emp.name.last}`.toLowerCase().includes(value.toLowerCase())
+    );
+    displayEmployees(filteredEmployees);
 };
 
 document.getElementById('search').addEventListener('keyup', filterCards);
