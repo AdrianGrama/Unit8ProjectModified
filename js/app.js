@@ -3,8 +3,7 @@ const urlAPI = `https://randomuser.me/api/?results=12&nat=US&inc=picture,name,em
 
 const displayEmployees = (data) => {
     const employeeSection = document.querySelector('.grid-area');
-    employeeSection.innerHTML = ''; // Resetăm conținutul pentru a adăuga doar cardurile filtrate
-
+    employeeSection.innerHTML = ''; 
     const contentHolder = document.createDocumentFragment();
 
     data.forEach((currEmp, i) => {
@@ -40,7 +39,7 @@ const getEmployeeData = async (url) => {
 
 const startApp = async () => {
     employees = await getEmployeeData(urlAPI);
-    displayEmployees(employees); // Afișăm toți angajații inițial
+    displayEmployees(employees); 
 }
 
 const toggleModal = () => {
@@ -112,7 +111,6 @@ const createNavigationButtons = () => {
 const changeEmployee = (direction) => {
     const currentIndex = +document.querySelector('.modal .card-container .card').dataset.index;
 
-    // Obținem cardurile din DOM după filtrare
     const activeCards = [...document.querySelectorAll('.grid-area .card')].map(card => +card.dataset.index);
 
     const newIndex = direction === 'prev' 
@@ -132,7 +130,6 @@ const showModal = (e) => {
     }
 };
 
-// Filtrăm datele și afișăm doar cardurile care corespund căutării
 const filterCards = ({ target: { value } }) => {
     const filteredEmployees = employees.filter(emp => 
         `${emp.name.first} ${emp.name.last}`.toLowerCase().includes(value.toLowerCase())
