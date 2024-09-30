@@ -33,6 +33,7 @@ const getEmployeeData = async (url) => {
     try {
         const response = await fetch(url);
         const { results } = await response.json();
+        console.log(results); 
         return results;
     } catch (error) {
         console.log('The API has a problem:', error);
@@ -79,7 +80,7 @@ const setModalData = (data, index) => {
         </div>
         <div class="about2">
             <p>${data.phone}</p>
-            <p>${data.location.street.number} ${data.location.street.name}, ${states[data.location.state]} ${data.location.postcode}</p>
+            <p>${data.location.street.number} ${data.location.street.name},${data.location.city} ,${data.location.state},${data.location.postcode}</p>
             <p>Birthday: ${new Date(data.dob.date).toLocaleDateString()}</p>
         </div>
     `;
